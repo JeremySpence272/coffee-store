@@ -1,31 +1,8 @@
 # Coffee Store Application
 
-A full-stack e-commerce application for a coffee store with product management, Stripe payment integration, and order history.
+A modern e-commerce application for a coffee store with product management, Stripe payment integration, and order history tracking.
 
-## Features
-
-- 🛒 Display coffee products with pricing
-- 💳 Process payments through Stripe
-- 👨‍💼 Admin panel for product management (add, edit, delete products)
-- 📊 View order history
-- 🌟 Responsive design
-
-## Tech Stack
-
-### Frontend
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui components
-
-### Backend
-
-- Flask (Python)
-- Stripe API for payment processing
-
-## Setup and Installation
+## Setup Instructions
 
 ### Prerequisites
 
@@ -33,69 +10,48 @@ A full-stack e-commerce application for a coffee store with product management, 
 - Python 3.9+
 - Stripe account with API keys
 
-### Backend Setup
-
-1. Navigate to the backend directory:
-
-   ```bash
-   cd APIs/coffee-store
-   ```
-
-2. Create a virtual environment:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Create a `.env` file with your Stripe secret key:
-
-   ```
-   STRIPE_SECRET_KEY=sk_test_your_stripe_test_key_here
-   ```
-
-5. Start the Flask server:
-   ```bash
-   python server.py
-   ```
-
 ### Frontend Setup
 
-1. Install dependencies:
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/JeremySpence272/coffee-store.git
+   cd coffee-store
+   ```
+
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Run the development server:
+3. Run the development server:
 
    ```bash
    npm run dev
    ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Using the Application
+### Backend Configuration
 
-### Customer View
+1. Create a `.env` file in the project root with your Stripe secret key:
 
-- Browse coffee products on the home page
-- Click "Buy Coffee" to purchase a product
-- Complete payment through Stripe checkout
-- See success/cancel pages after payment
+   ```
+   STRIPE_SECRET_KEY=sk_test_your_stripe_test_key_here
+   ```
 
-### Admin View
+2. Install Python dependencies:
 
-- Access the admin panel at `/admin`
-- Add new products
-- Edit existing products (name, price)
-- Delete products
+   ```bash
+   pip install flask stripe flask-cors python-dotenv
+   ```
+
+3. Start the Flask server:
+
+   ```bash
+   python server.py
+   ```
 
 ## Testing Payments
 
@@ -103,7 +59,3 @@ Use Stripe's test cards for payment testing:
 
 - Success: 4242 4242 4242 4242
 - Decline: 4000 0000 0000 0002
-
-## License
-
-MIT
