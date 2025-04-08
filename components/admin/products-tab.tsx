@@ -24,13 +24,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  price_id?: string;
-}
+import { Product, mockProducts } from "@/lib/mock-data";
+import { productApi } from "@/lib/api";
 
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,6 +36,7 @@ export default function ProductsTab() {
   const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
     name: "",
     price: 0,
+    price_id: "",
   });
 
   useEffect(() => {
@@ -50,19 +46,12 @@ export default function ProductsTab() {
   async function fetchProducts() {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8000/products");
-      if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
+      const data = await productApi.getAllProducts();
       setProducts(data);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching products:", error);
-      // For demo purposes, we'll add some sample products if the fetch fails
-      setProducts([
-        { id: "1", name: "Small Coffee", price: 3, price_id: "price_small" },
-        { id: "2", name: "Medium Coffee", price: 5, price_id: "price_medium" },
-        { id: "3", name: "Large Coffee", price: 7, price_id: "price_large" },
-        { id: "4", name: "Coffee Bundle", price: 15, price_id: "price_bundle" },
-      ]);
+      setProducts(mockProducts);
     } finally {
       setLoading(false);
     }
@@ -71,22 +60,11 @@ export default function ProductsTab() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProduct),
-      });
-
-      if (!response.ok) throw new Error("Failed to add product");
-
-      // Get the created product data from the response
-      const createdProduct = await response.json();
+      const createdProduct = await productApi.createProduct(newProduct);
       console.log("Created product:", createdProduct);
 
       setProducts([...products, createdProduct]);
-      setNewProduct({ name: "", price: 0 });
+      setNewProduct({ name: "", price: 0, price_id: "" });
       setIsAddDialogOpen(false);
       toast({
         title: "Product added",
@@ -107,18 +85,11 @@ export default function ProductsTab() {
     if (!editingProduct) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:8000/products/${editingProduct.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editingProduct),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to update product");
+      await productApi.updateProduct(editingProduct.id, {
+        name: editingProduct.name,
+        price: editingProduct.price,
+        price_id: editingProduct.price_id,
+      });
 
       setProducts(
         products.map((p) => (p.id === editingProduct.id ? editingProduct : p))
@@ -143,12 +114,7 @@ export default function ProductsTab() {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/products/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete product");
-
+      await productApi.deleteProduct(id);
       setProducts(products.filter((p) => p.id !== id));
       toast({
         title: "Product deleted",

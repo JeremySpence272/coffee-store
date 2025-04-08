@@ -11,13 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  price_id: string;
-}
+import { Product, mockProducts } from "@/lib/mock-data";
+import { productApi, checkoutApi } from "@/lib/api";
 
 export default function ProductGrid() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,24 +23,13 @@ export default function ProductGrid() {
     async function fetchProducts() {
       try {
         console.log("Fetching products from API...");
-        const response = await fetch("http://localhost:8000/products");
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error response:", errorText);
-          throw new Error(
-            `Failed to fetch products: ${response.status} ${response.statusText}`
-          );
-        }
-
-        const data = await response.json();
+        const data = await productApi.getAllProducts();
         console.log("Products fetched successfully:", data);
         setProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
         setError(String(error));
-        setProducts([]);
+        setProducts(mockProducts);
       } finally {
         setLoading(false);
       }
@@ -56,17 +40,7 @@ export default function ProductGrid() {
 
   const handleBuyCoffee = async (priceId: string) => {
     try {
-      const response = await fetch("http://localhost:8000/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ price_id: priceId }),
-      });
-
-      if (!response.ok) throw new Error("Checkout failed");
-
-      const { url } = await response.json();
+      const { url } = await checkoutApi.createCheckoutSession(priceId);
       window.location.href = url;
     } catch (error) {
       console.error("Error during checkout:", error);
